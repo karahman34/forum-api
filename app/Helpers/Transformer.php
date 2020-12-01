@@ -65,4 +65,40 @@ class Transformer
             $headers
         );
     }
+
+    /**
+     * Model not found response.
+     *
+     * @param   string  $modelName
+     *
+     * @return  JsonResponse
+     */
+    public static function modelNotFound(string $modelName = 'Model')
+    {
+        $message = "{$modelName} not found.";
+
+        return response()->json(
+            self::meta(false, $message),
+            404
+        );
+    }
+
+    /**
+     * Authorization failed json response.
+     *
+     * @param   string  $message
+     *
+     * @return  JsonResponse
+     */
+    public static function authorizationFailed(string $message = null)
+    {
+        if (is_null($message)) {
+            $message = 'User does not permitted to do this action.';
+        }
+
+        return response()->json(
+            self::meta(false, $message),
+            403
+        );
+    }
 }
