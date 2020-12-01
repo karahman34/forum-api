@@ -27,6 +27,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     ];
 
     /**
+     * The folder name of avatar image
+     *
+     * @var string
+     */
+    public static $avatar_folder = 'avatars';
+
+    /**
      * The attributes excluded from the model's JSON form.
      *
      * @var array
@@ -53,5 +60,17 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * Get user's avatar url
+     *
+     * @return  string
+     */
+    public function getAvatarUrl()
+    {
+        return !is_null($this->avatar)
+            ? env('APP_URL') . '/' . $this->avatar
+            : env('APP_URL') . '/' . self::$avatar_folder . '/default.png';
     }
 }
