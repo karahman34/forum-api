@@ -52,6 +52,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         });
 
         $router->get('/', 'PostController@index');
+        $router->get('/tags', 'PostController@getAvailableTags');
         $router->get('/{id}/comments', 'PostController@getComments');
 
         $router->patch('/{id}/views', 'PostController@incrementViews');

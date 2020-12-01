@@ -6,7 +6,9 @@ use App\Helpers\Transformer;
 use App\Http\Resources\CommentsCollection;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\PostsCollection;
+use App\Http\Resources\TagsCollection;
 use App\Models\Post;
+use App\Models\PostTag;
 use App\Models\Screenshot;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -97,6 +99,41 @@ class PostController extends Controller
             return Transformer::modelNotFound('Post');
         } catch (\Throwable $th) {
             return Transformer::fail('Failed to get post\' comments.');
+        }
+    }
+
+    /**
+     * Get available tags collection.
+     *
+     * @param   Request  $request
+     *
+     * @return  JsonResponse
+     */
+    public function getAvailableTags(Request $request)
+    {
+        try {
+            $tags = PostTag::select('name')
+                            ->when($request->has('sort'), function ($query) use ($request) {
+                                switch (strtolower($request->get('sort'))) {
+                                    // sort: old,new
+                                    case 'old':
+                                        $query->orderByDesc('created_at');
+                                        break;
+                                    
+                                    default:
+                                        $query->orderBy('created_at');
+                                        break;
+                                }
+                            })
+                            ->distinct()
+                            ->get();
+
+            return (new TagsCollection($tags))
+                        ->additional(
+                            Transformer::meta(true, 'Success to get tags collection.')
+                        );
+        } catch (\Throwable $th) {
+            return Transformer::fail('Failed to get tags collection.');
         }
     }
 
