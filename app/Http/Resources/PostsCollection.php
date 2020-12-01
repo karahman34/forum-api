@@ -22,6 +22,9 @@ class PostsCollection extends ResourceCollection
                 'title' => $post->title,
                 'created_at' => $post->created_at,
                 'updated_at' => $post->updated_at,
+                'tags' => $post->tags->map(function ($tag) {
+                    return $tag->name;
+                }),
                 'screenshots' => $post->screenshots->map(function (Screenshot $screenshot) {
                     return [
                         'original' => $screenshot->image,

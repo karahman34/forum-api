@@ -92,6 +92,25 @@ class PostController extends Controller
     }
 
     /**
+     * Attach tags to post
+     *
+     * @param   Post   $post
+     * @param   array  $tags
+     *
+     * @return  void
+     */
+    public function attachTags(Post $post, array $tags)
+    {
+        $tags_data = collect($tags)->map(function (string $tag) {
+            return [
+                'name' => strtolower($tag),
+            ];
+        });
+
+        $post->tags()->createMany($tags_data);
+    }
+
+    /**
      * Create new post.
      *
      * @param   Request  $request
@@ -103,8 +122,10 @@ class PostController extends Controller
         $this->validate($request, [
             'title' => 'required|string|max:255',
             'body' => 'required|string',
+            'tags' => 'required|array',
+            'tags.*' => 'string|regex:/^[a-zA-Z]+$/',
             'screenshots' => 'nullable|array',
-            'screenshots.*' => 'image|mimes:jpg,jpeg,png|max:4096'
+            'screenshots.*' => 'image|mimes:png,jpeg|max:4096',
         ]);
 
         try {
@@ -133,6 +154,9 @@ class PostController extends Controller
                 }
             }
 
+            // Attach tags
+            $this->attachTags($post, $request->get('tags'));
+
             return Transformer::ok('Success to create post.', new PostResource($post), 201);
         } catch (\Throwable $th) {
             return Transformer::fail('Failed to create post.');
@@ -152,6 +176,8 @@ class PostController extends Controller
         $this->validate($request, [
             'title' => 'required|string|max:255',
             'body' => 'required|string',
+            'tags' => 'required|array',
+            'tags.*' => 'string|regex:/^[a-zA-Z]+$/',
             'screenshots' => 'nullable|array',
             'screenshots.*' => 'image|mimes:jpg,jpeg,png|max:4096',
             'old_screenshots' => 'nullable|array',
@@ -166,9 +192,10 @@ class PostController extends Controller
 
             // Check & delete old screenshots
             if ($post->screenshots->count() > 0) {
-                $delete_able_screenshots = [];
                 $old_screenshots = $request->get('old_screenshots');
 
+                // Get the unused screenshots
+                $delete_able_screenshots = [];
                 if ((!is_array($old_screenshots) && is_null($old_screenshots)) || count($old_screenshots) == 0) {
                     $delete_able_screenshots = $post->screenshots->map(function ($screenshot) {
                         return $screenshot->image;
@@ -208,6 +235,12 @@ class PostController extends Controller
                     $post->screenshots()->createMany($screenshot_names);
                 }
             }
+
+            // Detach all tags
+            $post->tags()->delete();
+
+            // Store Tags
+            $this->attachTags($post, $request->get('tags'));
 
             // Refresh model
             $post->refresh();
