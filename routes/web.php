@@ -44,15 +44,16 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['as' => 'post', 'prefix' => 'posts'], function () use ($router) {
         $router->group(['middleware' => ['auth']], function () use ($router) {
             $router->post('/', 'PostController@store');
-            $router->put('/{id}', 'PostController@update');
+
+            $router->patch('/{id}', 'PostController@update');
+            $router->patch('/{id}/solved', 'PostController@markSolved');
+
+            $router->delete('/{id}', 'PostController@destroy');
         });
 
         $router->get('/', 'PostController@index');
 
-        $router->patch('/{id}/solved', 'PostController@markSolved');
         $router->patch('/{id}/views', 'PostController@incrementViews');
-
-        $router->delete('/{id}', 'PostController@destroy');
     });
 
     #------------------------------------------------------------------------------------

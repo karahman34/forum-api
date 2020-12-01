@@ -185,7 +185,9 @@ class PostController extends Controller
         ]);
 
         try {
-            $post = Post::select('id', 'views')->whereId($id)->firstOrFail();
+            $post = Post::select('id', 'user_id', 'views')->whereId($id)->firstOrFail();
+            
+            $this->authorize('update', $post);
 
             // Update post
             $post->update($request->only('title', 'body'));
@@ -284,7 +286,10 @@ class PostController extends Controller
     public function markSolved($id)
     {
         try {
-            $post = Post::select('id')->whereId($id)->firstOrFail();
+            $post = Post::select('id', 'user_id')->whereId($id)->firstOrFail();
+
+            $this->authorize('update', $post);
+
             $post->update([
                 'solved' => 'Y'
             ]);
@@ -307,7 +312,9 @@ class PostController extends Controller
     public function destroy($id)
     {
         try {
-            $post = Post::select('id')->whereId($id)->firstOrFail();
+            $post = Post::select('id', 'user_id')->whereId($id)->firstOrFail();
+
+            $this->authorize('delete', $post);
 
             // Delete screenshots
             $post->screenshots->each(function (Screenshot $screenshot) {

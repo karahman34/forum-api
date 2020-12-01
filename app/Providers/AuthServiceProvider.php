@@ -37,6 +37,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // Register Policies
+        Gate::policy(Post::class, PostPolicy::class);
         Gate::policy(Comment::class, CommentPolicy::class);
     }
 }
