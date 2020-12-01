@@ -42,6 +42,16 @@ class Post extends Model
     }
 
     /**
+     * Get the Post's tags.
+     *
+     * @return  HasMany
+     */
+    public function tags()
+    {
+        return $this->hasMany('App\Models\PostTag');
+    }
+
+    /**
      * Generate UUID.
      *
      * @return  string
