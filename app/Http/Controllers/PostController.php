@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Transformer;
+use App\Http\Resources\CommentsCollection;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\PostsCollection;
 use App\Models\Post;
@@ -52,12 +53,50 @@ class PostController extends Controller
                                 }
                             })
                             ->orderBy('created_at')
-                            ->paginate();
+                            ->paginate(10);
 
             return (new PostsCollection($posts))
                             ->additional(Transformer::meta(true, 'Success to get posts collection.'));
         } catch (\Throwable $th) {
             return Transformer::fail('Failed to get posts collection.');
+        }
+    }
+
+    /**
+     * Get post's comments collection.
+     *
+     * @param   Request  $request
+     * @param   string   $id
+     *
+     * @return  JsonResponse
+     */
+    public function getComments(Request $request, $id)
+    {
+        try {
+            $post = Post::select('id')->whereId($id)->firstOrFail();
+            $comments = $post->comments()
+                                ->when($request->has('sort'), function ($query) use ($request) {
+                                    switch (strtolower($request->get('sort'))) {
+                                        // sort: old,new
+                                        case 'old':
+                                            $query->orderByDesc('created_at');
+                                            break;
+                                        
+                                        default:
+                                            $query->orderBy('created_at');
+                                            break;
+                                    }
+                                })
+                                ->paginate(10);
+
+            return (new CommentsCollection($comments))
+                        ->additional(
+                            Transformer::meta(true, 'Success to get post\' comments.'),
+                        );
+        } catch (ModelNotFoundException $th) {
+            return Transformer::modelNotFound('Post');
+        } catch (\Throwable $th) {
+            return Transformer::fail('Failed to get post\' comments.');
         }
     }
 
@@ -162,6 +201,7 @@ class PostController extends Controller
             return Transformer::fail('Failed to create post.');
         }
     }
+    
 
     /**
      * Update post data.
