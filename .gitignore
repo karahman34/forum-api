@@ -1,4 +1,6 @@
 /vendor
+/public/avatars
+/public/screenshots
 /.idea
 Homestead.json
 Homestead.yaml

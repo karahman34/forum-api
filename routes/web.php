@@ -37,4 +37,21 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->post('refresh', ['uses' => 'AuthController@refresh', 'as' => 'refresh']);
         });
     });
+
+    #------------------------------------------------------------------------------------
+    # Post
+    #------------------------------------------------------------------------------------
+    $router->group(['as' => 'post', 'prefix' => 'posts'], function () use ($router) {
+        $router->group(['middleware' => ['auth']], function () use ($router) {
+            $router->post('/', 'PostController@store');
+            $router->put('/{id}', 'PostController@update');
+        });
+
+        $router->get('/', 'PostController@index');
+
+        $router->patch('/{id}/solved', 'PostController@markSolved');
+        $router->patch('/{id}/views', 'PostController@incrementViews');
+
+        $router->delete('/{id}', 'PostController@destroy');
+    });
 });
