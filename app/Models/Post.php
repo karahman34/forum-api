@@ -52,6 +52,16 @@ class Post extends Model
     }
 
     /**
+     * Get the Post's comments.
+     *
+     * @return  HasMany
+     */
+    public function comments()
+    {
+        return $this->hasMany('App\Models\Comment');
+    }
+
+    /**
      * Generate UUID.
      *
      * @return  string
