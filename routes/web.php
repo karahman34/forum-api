@@ -54,4 +54,17 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         $router->delete('/{id}', 'PostController@destroy');
     });
+
+    #------------------------------------------------------------------------------------
+    # Comment
+    #------------------------------------------------------------------------------------
+    $router->group(['as' => 'comment', 'prefix' => 'comments'], function () use ($router) {
+        $router->group(['middleware' => ['auth']], function () use ($router) {
+            $router->post('/', 'CommentController@store');
+
+            $router->patch('/{id}', 'CommentController@update');
+
+            $router->delete('/{id}', 'CommentController@destroy');
+        });
+    });
 });
