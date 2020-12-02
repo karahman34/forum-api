@@ -87,6 +87,44 @@ class CommentController extends Controller
      *
      * @return  JsonResponse
      */
+    public function markSolution($id)
+    {
+        try {
+            $comment = Comment::select('id', 'post_id')->whereId($id)->firstOrFail();
+            $post = $comment->post()->select('id', 'user_id')->first();
+            $post_author = $post->author()->select('id')->first();
+            $auth = Auth::user();
+
+            if ($auth->id !== $post_author->id) {
+                return Transformer::authorizationFailed();
+            }
+
+            // Unmark the previous solution
+            $post->comments()->where('solution', 'Y')->update([
+                'solution' => 'N'
+            ]);
+
+            $comment->update([
+                'solution' => 'Y'
+            ]);
+
+            return Transformer::ok('Success to update comment data.');
+        } catch (AuthorizationException $th) {
+            return Transformer::authorizationFailed();
+        } catch (ModelNotFoundException $th) {
+            return Transformer::modelNotFound('Comment');
+        } catch (\Throwable $th) {
+            return Transformer::fail('Failed to update comment data.');
+        }
+    }
+
+    /**
+     * Delete comment data.
+     *
+     * @param   int|string      $id
+     *
+     * @return  JsonResponse
+     */
     public function destroy($id)
     {
         try {

@@ -66,6 +66,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->post('/', 'CommentController@store');
 
             $router->patch('/{id}', 'CommentController@update');
+            $router->patch('/{id}/solution', 'CommentController@markSolution');
 
             $router->delete('/{id}', 'CommentController@destroy');
         });

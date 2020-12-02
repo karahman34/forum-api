@@ -19,6 +19,7 @@ class CreateCommentsTable extends Migration
             $table->char('post_id', 36);
             $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
             $table->longText('body');
+            $table->enum('solution', ['Y', 'N'])->default('N');
             $table->timestamps();
         });
     }
