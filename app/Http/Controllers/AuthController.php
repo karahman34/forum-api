@@ -56,7 +56,17 @@ class AuthController extends Controller
             // Crete user
             $user = User::create($payload);
 
-            return Transformer::ok('Success to create user.', new UserResource($user), 201);
+            // Login user
+            $token = Auth::login($user);
+
+            return Transformer::ok(
+                'Success to create user.',
+                array_merge(
+                    $this->respondWithToken($token),
+                    ['user' => new UserResource(auth()->user())]
+                ),
+                201
+            );
         } catch (\Throwable $th) {
             return Transformer::fail('Failed to create user.');
         }
