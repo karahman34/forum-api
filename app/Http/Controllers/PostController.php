@@ -39,7 +39,7 @@ class PostController extends Controller
     {
         try {
             $posts = Post::select('id', 'user_id', 'title', 'solved', 'views', 'created_at', 'updated_at')
-                            ->with(['author:id,avatar,username', 'screenshots'])
+                            ->with(['author:id,avatar,username', 'screenshots', 'tags:post_id,name'])
                             ->when($request->has('search'), function ($query) use ($request) {
                                 $query->where('title', 'like', "%{$request->get('search')}%");
                             })
@@ -53,6 +53,14 @@ class PostController extends Controller
                                         $query->where('solved', 'N');
                                         break;
                                 }
+                            })
+                            ->when($request->has('tags'), function ($query) use ($request) {
+                                // tags:tag1,tag2,tag3,etc..
+                                $tags = explode(',', $request->get('tags'));
+
+                                $query->whereHas('tags', function ($query) use ($tags) {
+                                    $query->whereIn('name', $tags);
+                                });
                             })
                             ->orderBy('created_at')
                             ->paginate(10);
