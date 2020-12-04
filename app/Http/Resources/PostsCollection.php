@@ -20,6 +20,9 @@ class PostsCollection extends ResourceCollection
             return [
                 'id' => $post->id,
                 'title' => $post->title,
+                'views' => $post->views,
+                'solved' => $post->solved,
+                'comments_count' => $post->comments_count,
                 'created_at' => $post->created_at,
                 'updated_at' => $post->updated_at,
                 'tags' => $post->tags->map(function ($tag) {

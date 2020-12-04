@@ -40,6 +40,7 @@ class PostController extends Controller
         try {
             $posts = Post::select('id', 'user_id', 'title', 'solved', 'views', 'created_at', 'updated_at')
                             ->with(['author:id,avatar,username', 'screenshots', 'tags:post_id,name'])
+                            ->withCount('comments')
                             ->when($request->has('search'), function ($query) use ($request) {
                                 $query->where('title', 'like', "%{$request->get('search')}%");
                             })

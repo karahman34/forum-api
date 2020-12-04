@@ -22,6 +22,9 @@ class PostResource extends JsonResource
             'tags' => $this->tags->map(function ($tag) {
                 return $tag->name;
             }),
+            'views' => $this->views,
+            'solved' => $this->solved,
+            'comments_count' => $this->comments_count,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'screenshots' => $this->screenshots->map(function (Screenshot $screenshot) {
