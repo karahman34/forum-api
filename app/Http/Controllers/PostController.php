@@ -38,7 +38,7 @@ class PostController extends Controller
     public function index(Request $request)
     {
         try {
-            $posts = Post::select('id', 'user_id', 'title', 'solved', 'views', 'created_at', 'updated_at')
+            $query = Post::select('id', 'user_id', 'title', 'solved', 'views', 'created_at', 'updated_at')
                             ->with(['author:id,avatar,username', 'screenshots', 'tags:post_id,name'])
                             ->withCount('comments')
                             ->when($request->has('search'), function ($query) use ($request) {
@@ -63,13 +63,43 @@ class PostController extends Controller
                                     $query->whereIn('name', $tags);
                                 });
                             })
-                            ->orderBy('created_at')
-                            ->paginate(10);
+                            ->orderByDesc('created_at');
+
+            $limit = $request->get('limit', null);
+
+            if (is_null($limit)) {
+                $posts = $query->paginate(10);
+            } else {
+                $posts = (int) $limit > 1 ? $query->paginate($limit) : $query->get();
+            }
 
             return (new PostsCollection($posts))
                             ->additional(Transformer::meta(true, 'Success to get posts collection.'));
         } catch (\Throwable $th) {
             return Transformer::fail('Failed to get posts collection.');
+        }
+    }
+
+    /**
+     * Get Post data.
+     *
+     * @param   string  $id
+     *
+     * @return  JsonResponse
+     */
+    public function show($id)
+    {
+        try {
+            $post = Post::with('author')
+                            ->withCount('comments')
+                            ->whereId($id)
+                            ->firstOrFail();
+
+            return Transformer::ok('Success to get post data.', new PostResource($post));
+        } catch (ModelNotFoundException $th) {
+            return Transformer::modelNotFound('Post');
+        } catch (\Throwable $th) {
+            return Transformer::fail('Failed to get post data.');
         }
     }
 
@@ -88,13 +118,18 @@ class PostController extends Controller
             $comments = $post->comments()
                                 ->when($request->has('sort'), function ($query) use ($request) {
                                     switch (strtolower($request->get('sort'))) {
-                                        // sort: old,new
+                                        // sort: old/new/solution
                                         case 'old':
-                                            $query->orderByDesc('created_at');
-                                            break;
-                                        
-                                        default:
                                             $query->orderBy('created_at');
+                                            break;
+
+                                        case 'solution':
+                                            $query->orderByDesc('solution')
+                                                    ->orderBy('created_at');
+                                            break;
+
+                                        default:
+                                            $query->orderByDesc('created_at');
                                             break;
                                     }
                                 })
