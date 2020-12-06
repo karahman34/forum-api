@@ -72,4 +72,14 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->delete('/{id}', 'CommentController@destroy');
         });
     });
+
+    #------------------------------------------------------------------------------------
+    # Profile
+    #------------------------------------------------------------------------------------
+    $router->group(['as' => 'profile', 'prefix' => 'profile'], function () use ($router) {
+        $router->group(['middleware' => ['auth']], function () use ($router) {
+            $router->patch('/', 'ProfileController@updateProfile');
+            $router->patch('/password', 'ProfileController@updatePassword');
+        });
+    });
 });

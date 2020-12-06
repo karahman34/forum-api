@@ -44,7 +44,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $payload = $this->validate($request, [
-            'username' => 'required|string|min:8|max:255|unique:users,username',
+            'username' => 'required|string|min:8|max:30|regex:/^[a-z]+([_a-z0-9]+)?$/|unique:users,username',
             'email' => 'required|string|email|min:8|max:255|unique:users,email',
             'password' => 'required|string|min:8|max:255|confirmed',
         ]);
