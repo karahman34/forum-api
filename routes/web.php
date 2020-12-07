@@ -17,10 +17,25 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+$router->get('/verify-email', [
+    'as' => 'verify_email',
+    'uses' => 'VerifyEmailController@verifyEmail'
+]);
+
 #------------------------------------------------------------------------------------
 # API
 #------------------------------------------------------------------------------------
 $router->group(['prefix' => 'api'], function () use ($router) {
+    #------------------------------------------------------------------------------------
+    # Single Routes
+    #------------------------------------------------------------------------------------
+    $router->group(['middleware' => 'auth'], function () use ($router) {
+        $router->post('send-verify-email', [
+            'as' => 'send_verify_email',
+            'uses' => 'VerifyEmailController@sendVerifyEmail',
+        ]);
+    });
+
     #------------------------------------------------------------------------------------
     # Auth
     #------------------------------------------------------------------------------------

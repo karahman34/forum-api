@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Transformer;
 use App\Http\Resources\UserResource;
+use App\Jobs\SendVerifyEmailJob;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -58,6 +59,9 @@ class AuthController extends Controller
 
             // Login user
             $token = Auth::login($user);
+
+            // Send verify email
+            dispatch(new SendVerifyEmailJob($user));
 
             return Transformer::ok(
                 'Success to create user.',

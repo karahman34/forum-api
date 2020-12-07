@@ -62,6 +62,7 @@ $app->configure('app');
 $app->configure('auth');
 $app->configure('cors');
 $app->configure('mail');
+$app->configure('queue');
 
 $app->alias('mail.manager', Illuminate\Mail\MailManager::class);
 $app->alias('mail.manager', Illuminate\Contracts\Mail\Factory::class);
@@ -88,6 +89,7 @@ $app->middleware([
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
     'guest' => App\Http\Middleware\Guest::class,
+    'verified' => App\Http\Middleware\Verified::class,
 ]);
 
 /*
