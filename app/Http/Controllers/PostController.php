@@ -245,7 +245,7 @@ class PostController extends Controller
             'tags' => 'required|array',
             'tags.*' => 'string|regex:/^[a-zA-Z]+$/',
             'screenshots' => 'nullable|array',
-            'screenshots.*' => 'image|mimes:png,jpeg|max:4096',
+            'screenshots.*' => 'mimes:png,jpeg,jpg|max:4096',
         ]);
 
         try {
@@ -300,7 +300,7 @@ class PostController extends Controller
             'tags' => 'required|array',
             'tags.*' => 'string|regex:/^[a-zA-Z]+$/',
             'screenshots' => 'nullable|array',
-            'screenshots.*' => 'image|mimes:jpg,jpeg,png|max:4096',
+            'screenshots.*' => 'mimes:jpg,jpeg,png|max:4096',
             'old_screenshots' => 'nullable|array',
             'old_screenshots.*' => 'string',
         ]);
