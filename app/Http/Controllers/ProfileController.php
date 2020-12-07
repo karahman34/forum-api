@@ -22,7 +22,8 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $this->validate($request, [
-            'avatar' => 'present|nullable|mimes:jpg,jpeg,png|max:4096',
+            'email' => 'nullable|string|email|max:255',
+            'avatar' => 'nullable|mimes:jpg,jpeg,png|max:4096',
             'username' => 'required|string|min:8|max:30|regex:/^[a-z]+([_a-z0-9]+)?$/|unique:users,username,' . $user->id,
         ]);
 
@@ -44,6 +45,15 @@ class ProfileController extends Controller
                 if (!is_null($user->avatar)) {
                     unlink(base_path('public/' . $user->avatar));
                 }
+            }
+
+            // Email
+            if ($request->has('email') && !is_null($request->get('email'))) {
+                if (is_null($user->verified_at)) {
+                    return Transformer::fail('You have to verify your email address first.', null, 403);
+                }
+
+                $payload['email'] = $request->get('email');
             }
 
             // Update user
