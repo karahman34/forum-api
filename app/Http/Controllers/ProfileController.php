@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Transformer;
+use App\Http\Resources\PostsCollection;
+use App\Http\Resources\UserPostsCollection;
 use App\Http\Resources\UserResource;
+use App\Models\Post;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,10 +30,11 @@ class ProfileController extends Controller
             'email' => 'nullable|string|email|max:255',
             'avatar' => 'nullable|mimes:jpg,jpeg,png|max:4096',
             'username' => 'required|string|min:8|max:30|regex:/^[a-z]+([_a-z0-9]+)?$/|unique:users,username,' . $user->id,
+            'bio' => 'nullable|string'
         ]);
 
         try {
-            $payload = $request->only('username');
+            $payload = $request->only(['username', 'bio']);
 
             // Avatar
             if ($request->hasFile('avatar')) {
