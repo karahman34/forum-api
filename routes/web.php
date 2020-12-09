@@ -96,5 +96,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->patch('/', 'ProfileController@updateProfile');
             $router->patch('/password', 'ProfileController@updatePassword');
         });
+
+        $router->get('/{username}', 'ProfileController@getUser');
+        $router->get('/{username}/posts', 'ProfileController@getUserPosts');
     });
 });

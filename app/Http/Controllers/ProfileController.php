@@ -16,6 +16,60 @@ use Illuminate\Support\Facades\Auth;
 class ProfileController extends Controller
 {
     /**
+     * Get User info.
+     *
+     * @param   string  $username
+     *
+     * @return  JsonResponse
+     */
+    public function getUser(string $username)
+    {
+        try {
+            $user = User::select('id', 'avatar', 'username', 'bio')->whereUsername($username)->firstOrFail();
+
+            return Transformer::ok('Success to get user info.', [
+                'user' => $user
+            ]);
+        } catch (ModelNotFoundException $th) {
+            return Transformer::modelNotFound('User');
+        } catch (\Throwable $th) {
+            return Transformer::fail('Failed to get user\'s info.');
+        }
+    }
+
+    /**
+     * Get user\'s posts collection.
+     *
+     * @param   Request  $request
+     * @param   string   $username
+     *
+     * @return  JsonResponse
+     */
+    public function getUserPosts(Request $request, $username)
+    {
+        try {
+            $user = User::select('id')
+                            ->where('username', $username)
+                            ->firstOrFail();
+
+            $posts = Post::select('id', 'user_id', 'title', 'solved', 'views', 'created_at', 'updated_at')
+                            ->with(['author:id,avatar,username', 'screenshots', 'tags:post_id,name'])
+                            ->withCount('comments')
+                            ->where('user_id', $user->id)
+                            ->paginate($request->get('limit', 10));
+
+            return (new PostsCollection($posts))
+                    ->additional(
+                        Transformer::meta(true, 'Success to get user\'s posts.')
+                    );
+        } catch (ModelNotFoundException $th) {
+            return Transformer::modelNotFound('User');
+        } catch (\Throwable $th) {
+            return Transformer::fail('Failed to get user\'s posts.');
+        }
+    }
+
+    /**
      * Update user profile.
      *
      * @param   Request  $request
