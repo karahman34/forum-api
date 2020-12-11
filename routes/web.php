@@ -102,4 +102,18 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('/{username}', 'ProfileController@getUser');
         $router->get('/{username}/posts', 'ProfileController@getUserPosts');
     });
+
+    #------------------------------------------------------------------------------------
+    # Profile
+    #------------------------------------------------------------------------------------
+    $router->group(['as' => 'notification', 'prefix' => 'notifications/'], function () use ($router) {
+        $router->group(['middleware' => ['auth']], function () use ($router) {
+            $router->get('/', 'NotificationController@index');
+
+            $router->patch('/open', 'NotificationController@notificationOpen');
+            $router->patch('/{id}/read', 'NotificationController@markRead');
+            
+            $router->delete('/{id}', 'NotificationController@destroy');
+        });
+    });
 });

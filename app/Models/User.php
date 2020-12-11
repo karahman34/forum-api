@@ -25,6 +25,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'username',
         'email',
         'bio',
+        'new_notifications',
         'password',
         'verified_at',
     ];
@@ -73,6 +74,16 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function posts()
     {
         return $this->hasMany('App\Models\Post');
+    }
+
+    /**
+     * Get user's notifications.
+     *
+     * @return  HasMany
+     */
+    public function notifications()
+    {
+        return $this->hasMany('App\Models\Notification');
     }
 
     /**

@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('avatar')->nullable();
             $table->text('bio')->nullable();
+            $table->unsignedInteger('new_notifications')->default(0);
             $table->timestamp('verified_at')->nullable();
             $table->timestamps();
         });

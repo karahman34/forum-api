@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Comment;
-use App\Models\User;
+use App\Models\Notification;
+use App\Models\Post;
 use App\Policies\CommentPolicy;
+use App\Policies\NotificationPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -39,5 +41,6 @@ class AuthServiceProvider extends ServiceProvider
         // Register Policies
         Gate::policy(Post::class, PostPolicy::class);
         Gate::policy(Comment::class, CommentPolicy::class);
+        Gate::policy(Notification::class, NotificationPolicy::class);
     }
 }

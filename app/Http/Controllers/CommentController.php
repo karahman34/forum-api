@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Transformer;
 use App\Http\Resources\CommentResource;
+use App\Jobs\SetLastCommentJob;
+use App\Jobs\SetNotificationJob;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -30,13 +32,22 @@ class CommentController extends Controller
 
         try {
             // Get the post model
-            $post = Post::select('id')->whereId($request->get('_post_id'))->firstOrFail();
+            $post = Post::select('id', 'title', 'user_id')->whereId($request->get('_post_id'))->firstOrFail();
 
             // Create comment
             $comment = $post->comments()->create([
                 'user_id' => Auth::id(),
                 'body' => $request->get('body'),
             ]);
+
+            // Set notifications.
+            dispatch(new SetNotificationJob(
+                $post->author,
+                Auth::user(),
+                $post,
+                'post',
+                'comment'
+            ));
 
             return Transformer::ok('Success to create comment.', new CommentResource($comment), 201);
         } catch (ModelNotFoundException $th) {
@@ -128,11 +139,16 @@ class CommentController extends Controller
     public function destroy($id)
     {
         try {
-            $comment = Comment::select('id', 'user_id')->whereId($id)->firstOrFail();
+            $comment = Comment::select('id', 'post_id', 'user_id')->whereId($id)->firstOrFail();
 
             $this->authorize('delete', $comment);
 
             $comment->delete();
+
+            $post = $comment->post()->select('id', 'user_id')->first();
+
+            // Set Last Comment
+            dispatch(new SetLastCommentJob(Auth::user(), $post));
 
             return Transformer::ok('Success to delete comment data.');
         } catch (AuthorizationException $th) {

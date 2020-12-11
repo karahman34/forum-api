@@ -64,6 +64,7 @@ $app->configure('cors');
 $app->configure('mail');
 $app->configure('queue');
 $app->configure('broadcasting');
+$app->configure('database');
 
 $app->alias('mail.manager', Illuminate\Mail\MailManager::class);
 $app->alias('mail.manager', Illuminate\Contracts\Mail\Factory::class);
