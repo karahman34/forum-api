@@ -63,6 +63,7 @@ $app->configure('auth');
 $app->configure('cors');
 $app->configure('mail');
 $app->configure('queue');
+$app->configure('broadcasting');
 
 $app->alias('mail.manager', Illuminate\Mail\MailManager::class);
 $app->alias('mail.manager', Illuminate\Contracts\Mail\Factory::class);
@@ -110,6 +111,7 @@ $app->register(Fruitcake\Cors\CorsServiceProvider::class);
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 $app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
 $app->register(Illuminate\Mail\MailServiceProvider::class);
+$app->register(App\Providers\BroadcastServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

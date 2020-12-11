@@ -34,6 +34,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             'as' => 'send_verify_email',
             'uses' => 'VerifyEmailController@sendVerifyEmail',
         ]);
+
+        $router->post('broadcasting/auth', ['uses' => 'BroadcastController@authenticate']);
     });
 
     #------------------------------------------------------------------------------------
