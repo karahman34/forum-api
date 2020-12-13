@@ -22,12 +22,18 @@ $router->get('/verify-email', [
     'uses' => 'VerifyEmailController@verifyEmail'
 ]);
 
+$router->get('/reset-password', [
+    'as' => 'show.reset_password',
+    'uses' => 'ResetPasswordController@view',
+]);
+
+
 #------------------------------------------------------------------------------------
 # API
 #------------------------------------------------------------------------------------
 $router->group(['prefix' => 'api'], function () use ($router) {
     #------------------------------------------------------------------------------------
-    # Single Routes
+    # Single Routes - Auth
     #------------------------------------------------------------------------------------
     $router->group(['middleware' => 'auth'], function () use ($router) {
         $router->post('send-verify-email', [
@@ -36,6 +42,14 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         ]);
 
         $router->post('broadcasting/auth', ['uses' => 'BroadcastController@authenticate']);
+    });
+
+    #------------------------------------------------------------------------------------
+    # Single Routes - Guest
+    #---
+    $router->group(['middleware' => 'guest'], function () use ($router) {
+        $router->post('/reset-password', ['uses' => 'ResetPasswordController@sendResetEmail']);
+        $router->patch('/reset-password', ['uses' => 'ResetPasswordController@resetPassword', 'as' => 'reset_password']);
     });
 
     #------------------------------------------------------------------------------------
