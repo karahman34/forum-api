@@ -17,7 +17,7 @@ class CreateNotificationsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('from_id')->constrained('users')->onDelete('cascade');
-            $table->char('post_id', 36);
+            $table->uuid('post_id');
             $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
             $table->string('message');
             $table->enum('context', ['post', 'comment']);

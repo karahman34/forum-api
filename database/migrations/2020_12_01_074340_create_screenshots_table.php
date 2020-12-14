@@ -15,7 +15,7 @@ class CreateScreenshotsTable extends Migration
     {
         Schema::create('screenshots', function (Blueprint $table) {
             $table->id();
-            $table->char('post_id', 36)->nullable();
+            $table->uuid('post_id')->nullable();
             $table->foreign('post_id')->references('id')->on('posts')->onDelete('set null');
             $table->string('image');
             $table->timestamps();
