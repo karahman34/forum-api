@@ -12,6 +12,7 @@ class Post extends Model
 {
     use HasFactory;
 
+    public $keyType = 'string';
     public $incrementing = false;
     public static $screenshots_folder = 'screenshots';
 
