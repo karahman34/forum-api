@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\Post;
 use App\Policies\CommentPolicy;
 use App\Policies\NotificationPolicy;
+use App\Policies\PostPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
