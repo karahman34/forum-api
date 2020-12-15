@@ -48,7 +48,7 @@ class SetNotificationJob extends Job implements ShouldQueue
                 $comments = $this->post->comments()->with('author')
                                                     ->orderByDesc('created_at')
                                                     ->limit(3)
-                                                    ->groupBy('user_id')
+                                                    ->groupBy('comments.user_id', 'comments.id')
                                                     ->get();
                 $last_three_usernames = $comments->pluck('author.username')->join(',');
 
