@@ -34,9 +34,13 @@ class SetLastCommentJob extends Job implements ShouldQueue
         $this->auth->decrement('new_notifications', 1);
 
         // Get last comment.
+        $post_author = $this->post->author()->select('id', 'username')->first();
         $two_last_comment = $this->post->comments()
                                 ->select('id', 'post_id', 'user_id', 'created_at')
-                                ->with('author:id')
+                                ->with('author:id,username')
+                                ->whereHas('author', function ($query) use ($post_author) {
+                                    $query->where('username', '!=', $post_author->username);
+                                })
                                 ->orderByDesc('created_at')
                                 ->limit(2)
                                 ->groupBy('user_id')

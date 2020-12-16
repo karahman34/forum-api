@@ -41,13 +41,15 @@ class CommentController extends Controller
             ]);
 
             // Set notifications.
-            dispatch(new SetNotificationJob(
-                $post->author,
-                Auth::user(),
-                $post,
-                'post',
-                'comment'
-            ));
+            if ($post->author()->select('id', 'username')->first()->username !== Auth::user()->username) {
+                dispatch(new SetNotificationJob(
+                    $post->author,
+                    Auth::user(),
+                    $post,
+                    'post',
+                    'comment'
+                ));
+            }
 
             return Transformer::ok('Success to create comment.', new CommentResource($comment), 201);
         } catch (ModelNotFoundException $th) {
@@ -148,7 +150,9 @@ class CommentController extends Controller
             $post = $comment->post()->select('id', 'user_id')->first();
 
             // Set Last Comment
-            dispatch(new SetLastCommentJob(Auth::user(), $post));
+            if ($post->author()->select('id', 'username')->first()->username !== Auth::user()->username) {
+                dispatch(new SetLastCommentJob(Auth::user(), $post));
+            }
 
             return Transformer::ok('Success to delete comment data.');
         } catch (AuthorizationException $th) {

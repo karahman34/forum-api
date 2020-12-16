@@ -45,7 +45,11 @@ class SetNotificationJob extends Job implements ShouldQueue
         $message = null;
         if ($this->context === 'post') {
             if ($this->sub_context === 'comment') {
+                $post_author = $this->post->author()->select('id', 'username')->first();
                 $comments = $this->post->comments()->with('author')
+                                                    ->whereHas('author', function ($query) use ($post_author) {
+                                                        $query->where('username', '!=', $post_author->username);
+                                                    })
                                                     ->orderByDesc('created_at')
                                                     ->limit(3)
                                                     ->groupBy('comments.user_id', 'comments.id')
